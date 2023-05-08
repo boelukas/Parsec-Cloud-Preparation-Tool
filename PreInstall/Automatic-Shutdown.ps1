@@ -122,15 +122,4 @@ function AutomaticShutdown {
 	return $form1.ShowDialog()
 }
 
-function idle {
-$readfile = (Get-Content -Path $env:ProgramData\Autoshutdown.txt) - 10
-do {
-[PInvoke.Win32.UserInput]::LastInput | Out-Null
-[PInvoke.Win32.UserInput]::IdleTime | Out-Null
-Start-Sleep -Seconds 1
-}
-Until([PInvoke.Win32.UserInput]::Idletime.TotalMinutes -gt $readfile)
 AutomaticShutdown
-}
-
-idle

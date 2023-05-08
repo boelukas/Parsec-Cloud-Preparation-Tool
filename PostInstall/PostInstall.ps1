@@ -29,6 +29,8 @@ function setupEnvironment {
     if((Test-Path $env:ProgramData\ParsecLoader\clear-proxy.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\clear-proxy.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\CreateClearProxyScheduledTask.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\CreateClearProxyScheduledTask.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\Automatic-Shutdown.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\Automatic-Shutdown.ps1 -Destination $env:ProgramData\ParsecLoader}
+    if((Test-Path $env:ProgramData\ParsecLoader\ShutdownTask.xml) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\ShutdownTask.xml -Destination $env:ProgramData\ParsecLoader}
+    if((Test-Path $env:ProgramData\ParsecLoader\GPUUpdaterTool.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\GPUUpdaterTool.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\CreateAutomaticShutdownScheduledTask.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\CreateAutomaticShutdownScheduledTask.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\GPU-Update.ico) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\GPU-Update.ico -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\CreateOneHourWarningScheduledTask.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\CreateOneHourWarningScheduledTask.ps1 -Destination $env:ProgramData\ParsecLoader}
@@ -467,7 +469,6 @@ function download-resources {
     ProgressWriter -Status "Downloading GPU Updater" -PercentComplete $PercentComplete
     (New-Object System.Net.WebClient).DownloadFile("https://s3.amazonaws.com/parseccloud/image/parsec+desktop.png", "C:\ParsecTemp\parsec+desktop.png")
     (New-Object System.Net.WebClient).DownloadFile("https://s3.amazonaws.com/parseccloud/image/white_ico_agc_icon.ico", "C:\ParsecTemp\white_ico_agc_icon.ico")
-    (New-Object System.Net.WebClient).DownloadFile("https://raw.githubusercontent.com/parsec-cloud/Cloud-GPU-Updater/master/GPUUpdaterTool.ps1", "$env:ProgramData\ParsecLoader\GPUUpdaterTool.ps1")
     ProgressWriter -Status "Downloading Google Chrome" -PercentComplete $PercentComplete
     (New-Object System.Net.WebClient).DownloadFile("https://dl.google.com/tag/s/dl/chrome/install/googlechromestandaloneenterprise64.msi", "C:\ParsecTemp\Apps\googlechromestandaloneenterprise64.msi")
     }
@@ -720,7 +721,6 @@ function AudioInstall {
 
 #Creates shortcut for the GPU Updater tool
 function gpu-update-shortcut {
-    (New-Object System.Net.WebClient).DownloadFile("https://raw.githubusercontent.com/parsec-cloud/Cloud-GPU-Updater/master/GPUUpdaterTool.ps1", "$env:ProgramData\ParsecLoader\GPUUpdaterTool.ps1")
     Unblock-File -Path "$env:ProgramData\ParsecLoader\GPUUpdaterTool.ps1"
     ProgressWriter -Status "Creating GPU Updater icon on Desktop" -PercentComplete $PercentComplete
     $Shell = New-Object -ComObject ("WScript.Shell")
@@ -808,6 +808,12 @@ Function InstallParsec {
     Start-Process "C:\ParsecTemp\Apps\parsec-windows.exe" -ArgumentList "/silent", "/shared" -wait
     }
 
+function SetupParsec {
+    $ParsecConfigFile = $env:ProgramData+"\Parsec\config.txt"
+    Add-content $ParsecConfigFile -value "server_resolution_x = 1920"
+    Add-content $ParsecConfigFile -value "server_resolution_y = 1080"
+    Add-content $ParsecConfigFile -value "host_idle_kick_time = 10"
+}
 Function InstallParsecVDD {
     ProgressWriter -Status "Installing Parsec Virtual Display Driver" -PercentComplete $PercentComplete
     Import-Certificate -CertStoreLocation "Cert:\LocalMachine\TrustedPublisher" -FilePath "$env:ProgramData\ParsecLoader\parsecpublic.cer" | Out-Null
@@ -832,6 +838,7 @@ function Install-Gaming-Apps {
     ProgressWriter -Status "Installing Parsec, ViGEm https://github.com/ViGEm/ViGEmBus and 7Zip" -PercentComplete $PercentComplete
     Install7Zip
     InstallParsec
+    SetupParsec
     #if((Test-RegistryValue -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -value "Parsec.App.0") -eq $true) {Set-ItemProperty -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name "Parsec.App.0" -Value "C:\Program Files\Parsec\parsecd.exe" | Out-Null} Else {New-ItemProperty -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name "Parsec.App.0" -Value "C:\Program Files\Parsec\parsecd.exe" | Out-Null}
     Start-Process -FilePath "C:\Program Files\Parsec\parsecd.exe"
     Start-Sleep -s 1
