@@ -68,7 +68,7 @@ function AutomaticShutdown {
 
 	$timer1_Tick = {
         if ($countdown -lt [timespan]'00:00:02') {$timer1.Stop()
-        Stop-Computer
+        Stop-Computer -Force
         }
         Else{}
 		$script:countdown -= [timespan]'00:00:01'
