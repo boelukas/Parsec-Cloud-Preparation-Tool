@@ -31,6 +31,8 @@ function setupEnvironment {
     if((Test-Path $env:ProgramData\ParsecLoader\Automatic-Shutdown.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\Automatic-Shutdown.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\GPUUpdaterTool.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\GPUUpdaterTool.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\CreateAutomaticShutdownScheduledTask.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\CreateAutomaticShutdownScheduledTask.ps1 -Destination $env:ProgramData\ParsecLoader}
+    if((Test-Path $env:ProgramData\ParsecLoader\BlockSteamConnection.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\BlockSteamConnection.ps1 -Destination $env:ProgramData\ParsecLoader}
+    if((Test-Path $env:ProgramData\ParsecLoader\UnblockSteamConnection.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\UnblockSteamConnection.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\GPU-Update.ico) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\GPU-Update.ico -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\CreateOneHourWarningScheduledTask.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\CreateOneHourWarningScheduledTask.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\WarningMessage.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\WarningMessage.ps1 -Destination $env:ProgramData\ParsecLoader}
@@ -666,6 +668,29 @@ function Create-One-Hour-Warning-Shortcut{
     $ShortCut.Save()
     }
 
+    function Create-BlockSteamkConnection-Shortcut{
+        ProgressWriter -Status "Creating block connection steam shortcut" -PercentComplete $PercentComplete
+        $Shell = New-Object -ComObject ("WScript.Shell")
+        $ShortCut = $Shell.CreateShortcut("$env:USERPROFILE\Desktop\Block Steam Connection.lnk")
+        $ShortCut.TargetPath="powershell.exe"
+        $ShortCut.Arguments='-ExecutionPolicy Bypass -File "C:\ProgramData\ParsecLoader\BlockSteamConnection.ps1"'
+        $ShortCut.WorkingDirectory = "$env:ProgramData\ParsecLoader";
+        $ShortCut.WindowStyle = 0;
+        $ShortCut.Description = "ClearProxy shortcut";
+        $ShortCut.Save()
+        }
+
+    function Create-UnblockSteamkConnection-AutoShutdown-Shortcut{
+        ProgressWriter -Status "Creating unblock steam connection shortcut" -PercentComplete $PercentComplete
+        $Shell = New-Object -ComObject ("WScript.Shell")
+        $ShortCut = $Shell.CreateShortcut("$env:USERPROFILE\Desktop\Unblock Steam Connection.lnk")
+        $ShortCut.TargetPath="powershell.exe"
+        $ShortCut.Arguments='-ExecutionPolicy Bypass -File "C:\ProgramData\ParsecLoader\UnblockSteamConnection.ps1"'
+        $ShortCut.WorkingDirectory = "$env:ProgramData\ParsecLoader";
+        $ShortCut.WindowStyle = 0;
+        $ShortCut.Description = "ClearProxy shortcut";
+        $ShortCut.Save()
+        }
 
 #Disables Server Manager opening on Startup
 function disable-server-manager {
@@ -845,7 +870,9 @@ function Install-Gaming-Apps {
     Start-Process -FilePath "C:\Program Files\Parsec\parsecd.exe"
     Start-Sleep -s 1
     }
-
+function CreateSteamConnectionBlockerFirewallRule {
+       New-NetFirewallRule -DisplayName ".steam-connection-blocker" -Direction Outbound -Program "C:\Program Files (x86)\Steam\steam.exe" -Action Block -Enabled False
+    }
 #Disable Devices
 function disable-devices {
     ProgressWriter -Status "Disabling Microsoft Basic Display Adapter, Generic Non PNP Monitor and other devices" -PercentComplete $PercentComplete
@@ -958,6 +985,9 @@ $ScripttaskList = @(
 "Create-One-Hour-Warning-Shortcut";
 "disable-server-manager";
 "Install-Gaming-Apps";
+"CreateSteamConnectionBlockerFirewallRule";
+"Create-BlockSteamkConnection-Shortcut";
+"Create-UnblockSteamkConnection-Shortcut";
 "disable-devices";
 "InstallParsecVDD";
 "Server2019Controller";
