@@ -680,7 +680,7 @@ function Create-One-Hour-Warning-Shortcut{
         $ShortCut.Save()
         }
 
-    function Create-UnblockSteamkConnection-AutoShutdown-Shortcut{
+    function Create-UnblockSteamkConnection-Shortcut{
         ProgressWriter -Status "Creating unblock steam connection shortcut" -PercentComplete $PercentComplete
         $Shell = New-Object -ComObject ("WScript.Shell")
         $ShortCut = $Shell.CreateShortcut("$env:USERPROFILE\Desktop\Unblock Steam Connection.lnk")

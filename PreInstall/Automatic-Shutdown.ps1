@@ -124,7 +124,7 @@ function AutomaticShutdown {
 
 function idle {
 $currentLastInput = [PInvoke.Win32.UserInput]::LastInputTicks
-$maxIdleTime = (Get-Content -Path $env:ProgramData\Autoshutdown.txt) - 10
+$maxIdleTime = (Get-Content -Path $env:ProgramData\ParsecLoader\Autoshutdown.txt) - 10
 
 $idleTime = 0
 do {

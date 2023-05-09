@@ -25,7 +25,7 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
  $trigger =  New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME 
  
  Register-ScheduledTask -Action $action -Trigger $trigger -TaskName "Automatically Shutdown on Idle" -Description "This script runs at startup and monitors for idle" -RunLevel Highest
- 
+ Start-ScheduledTask -TaskName "Automatically Shutdown on Idle"
+
  Write-Output "Successfully Created"
- 
  pause
