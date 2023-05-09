@@ -1,3 +1,15 @@
+
+ **_NOTE:_** Changes to the original repository
+- Fix Vigem errors
+- Fix GPU updater error on Google Cloud VMs
+- Fix auto-shutdown triggered on login
+- Fix auto-shutdown not triggering when no one is logged in
+- Start the auto shutdown task directly after it is created
+- Install Steam and add some helper scripts
+
+Everything was tested with Google Cloud VMs, Tesla P100 GPU and Windows Server 2022.
+
+
                            ((//////                                
                          #######//////                             
                          ##########(/////.                         
