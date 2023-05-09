@@ -838,7 +838,7 @@ Function InstallParsecVDD {
 
 function SetupAutoShutdown {
 
-    start-process powershell.exe -verb RunAS -argument "-file %datapath%\ParsecLoader\CreateAutomaticShutdownScheduledTask.ps1"
+    start-process powershell.exe -verb RunAS -argument "-file $env:ProgramData\ParsecLoader\CreateAutomaticShutdownScheduledTask.ps1"
 }
 
 #Apps that require human intervention
@@ -929,6 +929,7 @@ Write-Host -foregroundcolor red "
                     OS:
                     Server 2016
                     Server 2019
+                    Server 2022
                     
                     CLOUD SKU:
                     AWS G3.4xLarge    (Tesla M60)
