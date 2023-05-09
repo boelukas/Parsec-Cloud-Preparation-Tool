@@ -29,7 +29,6 @@ function setupEnvironment {
     if((Test-Path $env:ProgramData\ParsecLoader\clear-proxy.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\clear-proxy.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\CreateClearProxyScheduledTask.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\CreateClearProxyScheduledTask.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\Automatic-Shutdown.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\Automatic-Shutdown.ps1 -Destination $env:ProgramData\ParsecLoader}
-    if((Test-Path $env:ProgramData\ParsecLoader\ShutdownTask.xml) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\ShutdownTask.xml -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\GPUUpdaterTool.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\GPUUpdaterTool.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\CreateAutomaticShutdownScheduledTask.ps1) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\CreateAutomaticShutdownScheduledTask.ps1 -Destination $env:ProgramData\ParsecLoader}
     if((Test-Path $env:ProgramData\ParsecLoader\GPU-Update.ico) -eq $true) {} Else {Move-Item -Path $path\ParsecTemp\PreInstall\GPU-Update.ico -Destination $env:ProgramData\ParsecLoader}
@@ -471,6 +470,8 @@ function download-resources {
     (New-Object System.Net.WebClient).DownloadFile("https://s3.amazonaws.com/parseccloud/image/white_ico_agc_icon.ico", "C:\ParsecTemp\white_ico_agc_icon.ico")
     ProgressWriter -Status "Downloading Google Chrome" -PercentComplete $PercentComplete
     (New-Object System.Net.WebClient).DownloadFile("https://dl.google.com/tag/s/dl/chrome/install/googlechromestandaloneenterprise64.msi", "C:\ParsecTemp\Apps\googlechromestandaloneenterprise64.msi")
+    ProgressWriter -Status "Downloading Steam" -PercentComplete $PercentComplete
+    (New-Object System.Net.WebClient).DownloadFile("https://cdn.cloudflare.steamstatic.com/client/installer/SteamSetup.exe", "C:\ParsecTemp\Apps\SteamSetup.exe")
     }
 
 #install-base-files-silently
@@ -807,7 +808,9 @@ Function Server2019Controller {
 Function InstallParsec {
     Start-Process "C:\ParsecTemp\Apps\parsec-windows.exe" -ArgumentList "/silent", "/shared" -wait
     }
-
+function InstallSteam{
+    Start-Process "C:\ParsecTemp\Apps\SteamSetup.exe" -ArgumentList "/S" -wait
+}
 function SetupParsec {
     $ParsecConfigFile = $env:ProgramData+"\Parsec\config.txt"
     Add-content $ParsecConfigFile -value "server_resolution_x = 1920"
@@ -833,12 +836,18 @@ Function InstallParsecVDD {
     $configfile | Out-File C:\ProgramData\Parsec\config.txt -Encoding ascii
 }
 
+function SetupAutoShutdown {
+
+    start-process powershell.exe -verb RunAS -argument "-file %datapath%\ParsecLoader\CreateAutomaticShutdownScheduledTask.ps1"
+}
+
 #Apps that require human intervention
 function Install-Gaming-Apps {
     ProgressWriter -Status "Installing Parsec and 7Zip" -PercentComplete $PercentComplete
     Install7Zip
     InstallParsec
     SetupParsec
+    InstallSteam
     #if((Test-RegistryValue -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -value "Parsec.App.0") -eq $true) {Set-ItemProperty -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name "Parsec.App.0" -Value "C:\Program Files\Parsec\parsecd.exe" | Out-Null} Else {New-ItemProperty -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name "Parsec.App.0" -Value "C:\Program Files\Parsec\parsecd.exe" | Out-Null}
     Start-Process -FilePath "C:\Program Files\Parsec\parsecd.exe"
     Start-Sleep -s 1
@@ -962,7 +971,8 @@ $ScripttaskList = @(
 "clean-up";
 "clean-up-recent";
 "provider-specific";
-"TeamMachineSetupScheduledTask"
+"TeamMachineSetupScheduledTask";
+"SetupAutoShutdown"
 )
 
 foreach ($func in $ScripttaskList) {
