@@ -871,7 +871,7 @@ function Install-Gaming-Apps {
     Start-Sleep -s 1
     }
 function CreateSteamConnectionBlockerFirewallRule {
-       New-NetFirewallRule -DisplayName ".steam-connection-blocker" -Direction Outbound -Program "C:\Program Files (x86)\Steam\steam.exe" -Action Block -Enabled False
+       New-NetFirewallRule -DisplayName ".steam-connection-blocker" -Direction Outbound -Program "C:\Program Files (x86)\Steam\steam.exe" -Action Block -Enabled False | Out-Null
     }
 #Disable Devices
 function disable-devices {
