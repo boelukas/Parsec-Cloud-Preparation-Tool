@@ -812,7 +812,7 @@ function SetupParsec {
     $ParsecConfigFile = $env:ProgramData+"\Parsec\config.txt"
     Add-content $ParsecConfigFile -value "server_resolution_x = 1920"
     Add-content $ParsecConfigFile -value "server_resolution_y = 1080"
-    Add-content $ParsecConfigFile -value "host_idle_kick_time = 10"
+    Add-content $ParsecConfigFile -value "host_idle_kick_time = 30"
 }
 Function InstallParsecVDD {
     ProgressWriter -Status "Installing Parsec Virtual Display Driver" -PercentComplete $PercentComplete
