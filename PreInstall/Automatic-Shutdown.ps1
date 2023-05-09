@@ -122,4 +122,23 @@ function AutomaticShutdown {
 	return $form1.ShowDialog()
 }
 
+function idle {
+$currentLastInput = [PInvoke.Win32.UserInput]::LastInputTicks
+$maxIdleTime = (Get-Content -Path $env:ProgramData\Autoshutdown.txt) - 10
+
+$idleTime = 0
+do {
+    $newLastInput = [PInvoke.Win32.UserInput]::LastInputTicks
+    if ($currentLastInput -ne $newLastInput) {
+    $currentLastInput = $newLastInput
+    $idleTime = 0
+    }
+    Start-Sleep -Seconds 1
+    $idleTime += 1/60
+    Write-Output("Passed ms: "+$idleTime)
+}
+Until($idleTime -gt $maxIdleTime)
 AutomaticShutdown
+}
+
+idle
