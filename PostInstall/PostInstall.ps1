@@ -811,12 +811,6 @@ Function InstallParsec {
 function InstallSteam{
     Start-Process "C:\ParsecTemp\Apps\SteamSetup.exe" -ArgumentList "/S" -wait
 }
-function SetupParsec {
-    $ParsecConfigFile = $env:ProgramData+"\Parsec\config.txt"
-    Add-content $ParsecConfigFile -value "server_resolution_x = 1920"
-    Add-content $ParsecConfigFile -value "server_resolution_y = 1080"
-    Add-content $ParsecConfigFile -value "host_idle_kick_time = 30"
-}
 Function InstallParsecVDD {
     ProgressWriter -Status "Installing Parsec Virtual Display Driver" -PercentComplete $PercentComplete
     Import-Certificate -CertStoreLocation "Cert:\LocalMachine\TrustedPublisher" -FilePath "$env:ProgramData\ParsecLoader\parsecpublic.cer" | Out-Null
@@ -846,7 +840,6 @@ function Install-Gaming-Apps {
     ProgressWriter -Status "Installing Parsec and 7Zip" -PercentComplete $PercentComplete
     Install7Zip
     InstallParsec
-    SetupParsec
     InstallSteam
     #if((Test-RegistryValue -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -value "Parsec.App.0") -eq $true) {Set-ItemProperty -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name "Parsec.App.0" -Value "C:\Program Files\Parsec\parsecd.exe" | Out-Null} Else {New-ItemProperty -path HKCU:\Software\Microsoft\Windows\CurrentVersion\Run -Name "Parsec.App.0" -Value "C:\Program Files\Parsec\parsecd.exe" | Out-Null}
     Start-Process -FilePath "C:\Program Files\Parsec\parsecd.exe"
