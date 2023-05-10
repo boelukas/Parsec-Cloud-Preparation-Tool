@@ -42,7 +42,7 @@ namespace PInvoke.Win32 {
 }
 '@
 function AutomaticShutdown {
-	
+ 
 	Add-Type -AssemblyName System.Windows.Forms
 
 	[System.Windows.Forms.Application]::EnableVisualStyles()
@@ -62,7 +62,6 @@ function AutomaticShutdown {
 	}
 	
     $button_logic = {
-    Start-Process powershell.exe -ArgumentList "-ExecutionPolicy Bypass -windowstyle hidden -file $ENV:ProgramData\Automatic-Shutdown.ps1"
     $form1.Close()
     }
 
@@ -123,22 +122,21 @@ function AutomaticShutdown {
 }
 
 function idle {
-$currentLastInput = [PInvoke.Win32.UserInput]::LastInputTicks
-$maxIdleTime = (Get-Content -Path $env:ProgramData\ParsecLoader\Autoshutdown.txt) - 10
+    $currentLastInput = [PInvoke.Win32.UserInput]::LastInputTicks
+    $maxIdleTime = (Get-Content -Path $env:ProgramData\ParsecLoader\Autoshutdown.txt) - 10
 
-$idleTime = 0
-do {
-    $newLastInput = [PInvoke.Win32.UserInput]::LastInputTicks
-    if ($currentLastInput -ne $newLastInput) {
-    $currentLastInput = $newLastInput
     $idleTime = 0
+    do {
+        $newLastInput = [PInvoke.Win32.UserInput]::LastInputTicks
+        if ($currentLastInput -ne $newLastInput) {
+        $currentLastInput = $newLastInput
+        $idleTime = 0
+        }
+        Start-Sleep -Seconds 1
+        $idleTime += 1/60
     }
-    Start-Sleep -Seconds 1
-    $idleTime += 1/60
-    Write-Output("Passed ms: "+$idleTime)
-}
-Until($idleTime -gt $maxIdleTime)
-AutomaticShutdown
+    Until($idleTime -gt $maxIdleTime)
+    AutomaticShutdown
 }
 
 idle
