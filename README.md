@@ -4,6 +4,7 @@
 - Fix GPU updater error on Google Cloud VMs
 - Fix auto-shutdown triggered on login
 - Fix auto-shutdown not triggering when no one is logged in
+- Fix auto-shutdown not restarting after the countdown is canceled
 - Start the auto shutdown task directly after it is created
 - Install Steam and add some helper scripts
 
