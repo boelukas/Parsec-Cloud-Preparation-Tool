@@ -56,6 +56,7 @@ function AutomaticShutdown {
 
 	$form1_Load = {
 		$script:countdown = [timespan]'00:10:00' # 10 minutes
+        $script:LastInputTick = [PInvoke.Win32.UserInput]::LastInputTicks
 		$label000000.Text = "$countdown"
 		$timer1.Start()
 
@@ -72,6 +73,9 @@ function AutomaticShutdown {
         Else{}
 		$script:countdown -= [timespan]'00:00:01'
 		$label000000.Text = "$countdown"
+        if($script:LastInputTick -ne [PInvoke.Win32.UserInput]::LastInputTicks){
+            $form1.Close()
+        }
 
 	}
 	
