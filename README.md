@@ -6,6 +6,7 @@
 - Fix auto-shutdown not triggering when no one is logged in
 - Fix auto-shutdown not restarting after the countdown is canceled
 - Start the auto shutdown task directly after it is created
+- Limitation: Auto-shutdown only works after login to the vm, not at boot time. A started vm that is idle but not logged in in will not shutdown.
 - Install Steam and add some helper scripts
 
 Everything was tested with Google Cloud VMs, Tesla P100 GPU and Windows Server 2022.
